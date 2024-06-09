@@ -8,3 +8,5 @@ export default abstract class AbstratoController{
     abstract atualizar(req:Request, res:Response):void
     abstract deletar(req:Request, res:Response):void
 }
+
+//OI
