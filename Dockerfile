@@ -17,3 +17,4 @@ EXPOSE 8000
 
 # Comando para rodar a aplicação
 CMD ["sh", "-c", "npm run migration:run && npm run dev"]
+
