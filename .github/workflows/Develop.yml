@@ -16,6 +16,8 @@ jobs:
       env:
         PORT: ${{ secrets.PORT }}
         JWT_SECRET: ${{ secrets.JWT_SECRET }}
+        DB_URL_MONGO_BACK: ${{ secrets.DB_URL_MONGO_BACK }}
+        DB_URL: ${{ secrets.DB_URL }}
 
     steps:
     - name: Checkout code
