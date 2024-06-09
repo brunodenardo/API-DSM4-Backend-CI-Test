@@ -5,7 +5,7 @@ import IniciaInterfaceDashboard from "../services/Dashboard/IniciaInterfaceDashb
 import GeraDashBoardgeral from "../services/Dashboard/GeraDashBoardgeral";
 import ConsultaMedicoesDeHoje from "../services/Dashboard/ConsultaMedicoesDeHoje";
 import GeraDashboardEspecifico from "../services/Dashboard/GeraDashboardEspecifico";
-
+//oi
 class DashboardController{
 
     async gerarDashboardGeral(req:Request, res:Response){
