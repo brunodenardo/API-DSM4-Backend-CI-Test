@@ -1,7 +1,7 @@
 import { MongoClient, ServerApiVersion } from "mongodb";
 import { config } from "dotenv";
 config();
-
+//oi
 const uri = process.env.DB_URL_MONGO_BACK;
 
 if(uri==undefined){
