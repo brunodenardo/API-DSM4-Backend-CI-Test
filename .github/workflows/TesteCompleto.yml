@@ -74,6 +74,28 @@ jobs:
 
       steps:
 
+        - name: List Docker containers
+          run: docker ps -a
+  
+        - name: Start backend container if not running
+          run: |
+            BACKEND_CONTAINER_ID=$(docker ps -aqf "name=${{ job.services.backend.id }}")
+            if [ -z "$BACKEND_CONTAINER_ID" ]; then
+              echo "Backend container not found"
+              exit 1
+            fi
+            if [ $(docker inspect -f '{{.State.Running}}' $BACKEND_CONTAINER_ID) == "false" ]; then
+              echo "Starting backend container"
+              docker start $BACKEND_CONTAINER_ID
+            fi
+    
+        - name: Wait for backend container to be ready
+          run: sleep 10
+    
+        - name: Inspect backend container logs
+          run: docker logs $BACKEND_CONTAINER_ID
+
+
         - name: Rodar backend
           run: |
             docker start ${{ job.services.backend.id }}
