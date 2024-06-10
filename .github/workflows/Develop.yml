@@ -14,7 +14,7 @@ jobs:
     
     container:
       image: pedrohsalmeida/nimbus-backend:latest
-      options: --entrypoint /bin/sh 
+      options: --entrypoint /bin/sh
       env:
         PORT: ${{ secrets.PORT }}
         JWT_SECRET: ${{ secrets.JWT_SECRET }}
@@ -26,15 +26,6 @@ jobs:
     
       - name: Instalando dempendencias
         run: npm install
-
-      - name: Listar arquivos no container
-        run: ls -la
-      
-      - name: Listar conteúdo da pasta de testes
-        run: ls ./test
-        
-      - name: Mostrar o conteúdo do package.json formatado
-        run: cat package.json
     
       - name: rodando testes
         id: test
