@@ -23,6 +23,8 @@ jobs:
         - name: Checkout code
           uses: actions/checkout@v3
       
+        
+      
         - name: Instalando dempendencias
           run: npm install
       
@@ -71,6 +73,10 @@ jobs:
               - 3000:3000
 
       steps:
+
+        - name: Rodar backend
+          run: |
+            docker exec ${{ job.services.backend.id }} git clone ${{ github.repository }} && git checkout ${{ github.ref_name }}
 
         - name: Checkout code
           uses: actions/checkout@v3
