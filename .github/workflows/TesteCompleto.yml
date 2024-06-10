@@ -12,12 +12,12 @@ jobs:
         runs-on: ubuntu-latest
 
         container:
-            image: pedrohsalmeida/nimbus-backend:test
-            options: --entrypoint /bin/sh # Usa '/bin/sh' para garantir que os comandos 'run' funcionem
-            env:
-              PORT: ${{ secrets.PORT }}
-              JWT_SECRET: ${{ secrets.JWT_SECRET }}
-              DB_URL_MONGO_BACK: ${{ secrets.DB_URL_MONGO_BACK }}
+          image: pedrohsalmeida/nimbus-backend:test
+          options: --entrypoint /bin/sh # Usa '/bin/sh' para garantir que os comandos 'run' funcionem
+          env:
+            PORT: ${{ secrets.PORT }}
+            JWT_SECRET: ${{ secrets.JWT_SECRET }}
+            DB_URL_MONGO_BACK: ${{ secrets.DB_URL_MONGO_BACK }}
       
         steps:
         - name: Checkout code
@@ -35,7 +35,23 @@ jobs:
     TesteIntegracao:
       needs: TesteUnitario
       runs-on: ubuntu-latest
-      
+      container: 
+        image: pedrohsalmeida/nimbus-backend:test
+        options: --entrypoint /bin/sh # Usa '/bin/sh' para garantir que os comandos 'run' funcionem
+        env:
+          PORT: ${{secrets.PORT}}
+          JWT_SECRET: ${{secrets.JWT_SECRET}}
+          DB_URL_MONGO_BACK: ${{secrets.DB_URL_MONGO_BACK}}
+          DB_NAME: ${{secrets.DB_NAME}}
+          DB_HOST: db
+          DB_USER: ${{secrets.DB_USER}}
+          DB_PORT: ${{secrets.DB_PORT}}
+          DB_PASSWORD: ${{secrets.DB_PASSWORD}}
+          DB_NAME_TEST: ${{secrets.DB_NAME_TEST}}
+        ports:
+          - 8000:8000
+          
+
       services:
         db:
           image: postgres
@@ -45,23 +61,6 @@ jobs:
             POSTGRES_DB: ${{secrets.POSTGRES_DB}}
           ports:
             - 5432:5432
-           
-
-        backend:
-          image: pedrohsalmeida/nimbus-backend:latest
-          options: --entrypoint /bin/sh
-          env:
-            PORT: ${{secrets.PORT}}
-            JWT_SECRET: ${{secrets.JWT_SECRET}}
-            DB_URL_MONGO_BACK: ${{secrets.DB_URL_MONGO_BACK}}
-            DB_NAME: ${{secrets.DB_NAME}}
-            DB_HOST: db
-            DB_USER: ${{secrets.DB_USER}}
-            DB_PORT: ${{secrets.DB_PORT}}
-            DB_PASSWORD: ${{secrets.DB_PASSWORD}}
-            DB_NAME_TEST: ${{secrets.DB_NAME_TEST}}
-          ports:
-            - 8000:8000
 
         frontend:
             image: pedrohsalmeida/nimbus-frontend:test
@@ -74,33 +73,13 @@ jobs:
 
       steps:
 
-        - name: List Docker containers
-          run: docker ps -a
-  
-        - name: Start backend container if not running
-          run: |
-            BACKEND_CONTAINER_ID=$(docker ps -aqf "name=${{ job.services.backend.id }}")
-            if [ -z "$BACKEND_CONTAINER_ID" ]; then
-              echo "Backend container not found"
-              exit 1
-            fi
-            if [ $(docker inspect -f '{{.State.Running}}' $BACKEND_CONTAINER_ID) == "false" ]; then
-              echo "Starting backend container"
-              docker start $BACKEND_CONTAINER_ID
-            fi
-    
-        - name: Wait for backend container to be ready
-          run: sleep 10
-    
-        - name: Inspect backend container logs
-          run: docker logs $BACKEND_CONTAINER_ID
-
+        - name: Checkout code
+          uses: actions/checkout@v3
 
         - name: Rodar backend
           run: |
-            docker start ${{ job.services.backend.id }}
-            docker exec ${{ job.services.backend.id }} git clone ${{ github.repository }} && git checkout ${{ github.ref_name }}
-            docker exec ${{ job.services.backend.id }} npm install && npm run test:cypress
+            npm install
+            npm run test:cypress
 
         - name: Rodar frontend
           run: |
@@ -110,7 +89,7 @@ jobs:
 
         - name: Rodar os testes do frontend
           run: |
-            docker exec nimbus-frontend-container npm run cypress:run
+            npm run cypress:run
     
     AceitaRecusaPR:
       runs-on: ubuntu-latest
