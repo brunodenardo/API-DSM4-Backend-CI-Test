@@ -4,7 +4,7 @@ name: Teste Completo
 on: 
   pull_request: 
     branches:
-      - realease
+      - release
     
 
 jobs:
