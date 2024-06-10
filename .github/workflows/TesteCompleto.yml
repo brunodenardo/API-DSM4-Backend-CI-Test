@@ -37,25 +37,28 @@ jobs:
       needs: TesteUnitario
       runs-on: ubuntu-latest
       container: 
-        image: pedrohsalmeida/nimbus-backend:test
-        options: --entrypoint /bin/sh # Usa '/bin/sh' para garantir que os comandos 'run' funcionem
+        image: pedrohsalmeida/nimbus-frontend:test
+        options: >-
+          --entrypoint /bin/sh
+          --health-cmd backend_pronto
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
         env:
-          PORT: ${{secrets.PORT}}
-          JWT_SECRET: ${{secrets.JWT_SECRET}}
-          DB_URL_MONGO_BACK: ${{secrets.DB_URL_MONGO_BACK}}
-          DB_NAME: ${{secrets.DB_NAME}}
-          DB_HOST: db
-          DB_USER: ${{secrets.DB_USER}}
-          DB_PORT: ${{secrets.DB_PORT}}
-          DB_PASSWORD: ${{secrets.DB_PASSWORD}}
-          DB_NAME_TEST: ${{secrets.DB_NAME_TEST}}
+          NODE_ENV: production
+          NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: ${{secrets.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}}
         ports:
-          - 8000:8000
+          - 3000:3000
           
 
       services:
         db:
           image: postgres
+          options: >-
+            --health-cmd pg_isready
+            --health-interval 10s
+            --health-timeout 5s
+            --health-retries 5
           env:
             POSTGRES_USER: ${{secrets.POSTGRES_USER}}
             POSTGRES_PASSWORD: ${{secrets.POSTGRES_PASSWORD}}
@@ -63,42 +66,34 @@ jobs:
           ports:
             - 5432:5432
 
-          
-
-        frontend:
-            image: pedrohsalmeida/nimbus-frontend:test
-            options: --entrypoint /bin/sh
-            env:
-              NODE_ENV: production
-              NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: ${{secrets.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}}
-            ports:
-              - 3000:3000
+        backend:
+          image: pedrohsalmeida/nimbus-backend:latest
+          options: >-
+            --entrypoint /bin/sh
+            --health-cmd backend_pronto
+            --health-interval 10s
+            --health-timeout 5s
+            --health-retries 5
+          env:
+            PORT: ${{secrets.PORT}}
+            JWT_SECRET: ${{secrets.JWT_SECRET}}
+            DB_URL_MONGO_BACK: ${{secrets.DB_URL_MONGO_BACK}}
+            DB_NAME: ${{secrets.DB_NAME}}
+            DB_HOST: db
+            DB_USER: ${{secrets.DB_USER}}
+            DB_PORT: ${{secrets.DB_PORT}}
+            DB_PASSWORD: ${{secrets.DB_PASSWORD}}
+            DB_NAME_TEST: ${{secrets.DB_NAME_TEST}}
+          ports:
+            - 8000:8000
 
       steps:
 
-        - name: Checkout code
-          uses: actions/checkout@v3
-
-        - name: Instalando dependencias backend
-          run: npm install
-
-        - name: Esperar o banco de dados estar pronto
-          run: |
-            echo "Aguardando o banco de dados PostgreSQL estar pronto..."
-            until docker exec db pg_isready -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.DB_NAME_TEST }}; do
-              echo "Esperando pelo banco de dados..."
-              sleep 5
-            done
-
-        - name: Rodar backend
-          run: |
-            npm install
-            npm run test:cypress
-
         - name: Rodar frontend
           run: |
-            docker start ${{ job.services.frontend.id }}
-            docker exec ${{ job.services.frontend.id }} npm install && npx next build && npx next start
+            npm install
+            npx next build
+            npx next start
 
 
         - name: Rodar os testes do frontend
