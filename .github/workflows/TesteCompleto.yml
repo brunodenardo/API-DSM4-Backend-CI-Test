@@ -83,11 +83,11 @@ jobs:
 
         - name: Rodar frontend
           run: |
-            docker exec ${{ job.services.frontend.id }} npm i && npm build && npm start
+            docker exec ${{ job.services.frontend.id }} npm install && npm run build && npm run start
 
         - name: Rodar backend
           run: |
-            docker exec ${{ job.services.backend.id }} npm i && test:cypress
+            docker exec ${{ job.services.backend.id }} npm install && npm run test:cypress
 
         - name: Rodar os testes do frontend
           run: |
