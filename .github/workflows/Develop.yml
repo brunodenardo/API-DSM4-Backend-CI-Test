@@ -8,28 +8,39 @@ on:
     
 
 jobs:
+
   TesteUnitario:
     runs-on: ubuntu-latest
+    
     container:
-      image: pedrohsalmeida/nimbus-backend:test
-      options: --entrypoint /bin/sh # Usa '/bin/sh' para garantir que os comandos 'run' funcionem
+      image: pedrohsalmeida/nimbus-backend:latest
+      options: --entrypoint /bin/sh 
       env:
         PORT: ${{ secrets.PORT }}
         JWT_SECRET: ${{ secrets.JWT_SECRET }}
         DB_URL_MONGO_BACK: ${{ secrets.DB_URL_MONGO_BACK }}
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Instalando dempendencias
-      run: npm install
-
-    - name: rodando testes
-      id: test
-      run: npm run test:unit
-
     
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+    
+      - name: Instalando dempendencias
+        run: npm install
+
+      - name: Listar arquivos no container
+        run: ls -la
+      
+      - name: Listar conteúdo da pasta de testes
+        run: ls ./test
+        
+      - name: Mostrar o conteúdo do package.json formatado
+        run: cat package.json
+    
+      - name: rodando testes
+        id: test
+        run: npm run test:unit
+
+
 
   AceitaRecusaPR:
     runs-on: ubuntu-latest
@@ -65,13 +76,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Instalar Docker Compose
-        run: sudo apt-get install docker-compose
-
-      - name: Construir Imagem Docker
-        run: docker-compose build
-
-
       - name: Configurar Docker para autenticação
         uses: docker/login-action@v2
         with:
@@ -81,7 +85,7 @@ jobs:
       - name: Construir a imagem Docker
         run: |
           # Usando o número do pull request como parte da tag
-          docker build -t pedrohsalmeida/nimbus-backend:Dev-0.${{ github.event.number }}
+          docker build -t pedrohsalmeida/nimbus-backend:Dev-0.${{ github.event.number }} .
           docker tag pedrohsalmeida/nimbus-backend:Dev-0.${{ github.event.number }} pedrohsalmeida/nimbus-backend:latest
 
       - name: Push da imagem para o Docker Hub
