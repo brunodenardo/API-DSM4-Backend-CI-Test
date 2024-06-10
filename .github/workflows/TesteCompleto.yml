@@ -79,6 +79,9 @@ jobs:
         - name: Checkout code
           uses: actions/checkout@v3
 
+        - name: Instalando dependencias backend
+          run: npm install
+
         - name: Esperar o banco de dados estar pronto
           run: |
             echo "Aguardando o banco de dados PostgreSQL estar pronto..."
