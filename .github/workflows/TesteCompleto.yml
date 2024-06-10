@@ -76,14 +76,11 @@ jobs:
               - 3000:3000
 
       steps:
-        - name: Checkout code
-          uses: actions/checkout@v2
-
         
 
         - name: Rodar frontend
           run: |
-            docker exec ${{ job.services.frontend.id }} npm install && npm run build && npm run start
+            docker exec ${{ job.services.frontend.id }} npm install && npx next build && npx next start
 
         - name: Rodar backend
           run: |
