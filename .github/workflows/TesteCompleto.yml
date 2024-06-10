@@ -79,26 +79,6 @@ jobs:
         - name: Checkout code
           uses: actions/checkout@v2
 
-        - name: Esperando servicos estarem prontos
-          run: |
-              while ! docker exec ${{ job.services.db.id }} pg_isready -U postgres; do
-                echo "Waiting for PostgreSQL to be ready..."
-                sleep 5
-              done
-              while ! docker exec ${{ job.services.pgadmin.id }} curl --fail http://localhost:5050; do
-                echo "Waiting for pgAdmin to be ready..."
-                sleep 5
-              done
-              while ! docker exec ${{ job.services.backend.id }} curl --fail http://localhost:8000; do
-                echo "Waiting for backend to be ready..."
-                sleep 5
-              done
-              while ! docker exec ${{ job.services.frontend.id }} curl --fail http://localhost:3000; do
-                echo "Waiting for frontend to be ready..."
-                sleep 5
-              done
-
-        
         - name: Rodar backend
           run: |
             docker exec ${{ job.services.backend.id }} npm i && npm start
