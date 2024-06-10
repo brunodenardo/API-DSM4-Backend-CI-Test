@@ -71,7 +71,15 @@ jobs:
               - 3000:3000
 
       steps:
-        
+
+        - name: Inicia Docker container if not running
+          run: |
+            CONTAINER_ID=${{ job.services.frontend.id }}
+            # Check if container is running
+            if [ $(docker inspect -f '{{.State.Running}}' $CONTAINER_ID) == "false" ]; then
+              echo "Starting container $CONTAINER_ID"
+              docker start $CONTAINER_ID
+            fi
 
         - name: Rodar frontend
           run: |
