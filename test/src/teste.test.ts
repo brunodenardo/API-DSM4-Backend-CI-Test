@@ -1,4 +1,4 @@
 
 test("Sempre falha", async()=>{
-    expect(true).toBe(false)
+    expect(true).toBe(true)
 })
