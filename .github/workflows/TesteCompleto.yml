@@ -79,13 +79,15 @@ jobs:
         - name: Checkout code
           uses: actions/checkout@v2
 
-        - name: Rodar backend
-          run: |
-            docker exec ${{ job.services.backend.id }} npm i && npm start
+        
 
         - name: Rodar frontend
           run: |
             docker exec ${{ job.services.frontend.id }} npm i && npm build && npm start
+
+        - name: Rodar backend
+          run: |
+            docker exec ${{ job.services.backend.id }} npm i && test:cypress
 
         - name: Rodar os testes do frontend
           run: |
