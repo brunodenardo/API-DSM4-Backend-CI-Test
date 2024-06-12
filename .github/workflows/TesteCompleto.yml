@@ -41,6 +41,9 @@ jobs:
         - name: Checkout code
           uses: actions/checkout@v3
 
+        - name: Set up Docker Buildx
+          uses: docker/setup-buildx-action@v3
+
         - name: Build backend container image
           run: docker build -t backend/testeintegracao . --build-args PORT=${{ secrets.PORT }} JWT_SECRET=${{ secrets.JWT_SECRET }} DB_NAME=${{ secrets.DB_NAME }} DB_HOST=db DB_USER=${{ secrets.DB_USER }} DB_PORT=${{ secrets.DB_PORT }} DB_PASSWORD=${{ secrets.DB_PASSWORD }} DB_NAME_TEST=${{ secrets.DB_NAME_TEST }}
 
