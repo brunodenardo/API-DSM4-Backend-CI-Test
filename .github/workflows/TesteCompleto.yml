@@ -51,8 +51,7 @@ jobs:
 
 
         - name: Rodar back
-          run: |
-              docker run --name backend -e PORT=${{ secrets.PORT } -e JWT_SECRET=${{ secrets.JWT_SECRET }} -e DB_URL_MONGO_BACK=${{ secrets.DB_URL_MONGO_BACK }} -e DB_NAME=${{ secrets.DB_NAME }} -e DB_HOST=db -e DB_USER=${{ secrets.DB_USER }} -e DB_PORT=${{ secrets.DB_PORT }} -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} -e DB_NAME_TEST=${{ secrets.DB_NAME_TEST }} -d backend/testeIntegracao sh -c "npm run test:cypress"
+          run: docker run --name backend -e PORT=${{ secrets.PORT } -e JWT_SECRET=${{ secrets.JWT_SECRET }} -e DB_URL_MONGO_BACK=${{ secrets.DB_URL_MONGO_BACK }} -e DB_NAME=${{ secrets.DB_NAME }} -e DB_HOST=db -e DB_USER=${{ secrets.DB_USER }} -e DB_PORT=${{ secrets.DB_PORT }} -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} -e DB_NAME_TEST=${{ secrets.DB_NAME_TEST }} -d backend/testeIntegracao sh -c "npm run test:cypress"
                       
 
 
@@ -63,8 +62,7 @@ jobs:
 
 
         - name: Rodar os testes do frontend
-          run: |
-            docker exec frontend npx cypress run
+          run: docker exec frontend npx cypress run
     
     AceitaRecusaPR:
       runs-on: ubuntu-latest
