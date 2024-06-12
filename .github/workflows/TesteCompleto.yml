@@ -5,7 +5,6 @@ on:
   pull_request: 
     branches:
       - release
-    
 
 jobs:
     TesteUnitario:
@@ -19,86 +18,67 @@ jobs:
             JWT_SECRET: ${{ secrets.JWT_SECRET }}
             DB_URL_MONGO_BACK: ${{ secrets.DB_URL_MONGO_BACK }}
 
-      
+
         steps:
         - name: Checkout code
           uses: actions/checkout@v3
-      
-        
-      
+
+
+
         - name: Instalando dempendencias
           run: npm install
-      
+
         - name: rodando testes
           id: test
           run: npm run test:unit
-    
+
     TesteIntegracao:
       needs: TesteUnitario
       runs-on: ubuntu-latest
-      container: 
-        image: pedrohsalmeida/nimbus-frontend:test
-        options: >-
-          --entrypoint /bin/sh
-          --health-cmd backend_pronto
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        env:
-          NODE_ENV: production
-          NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: ${{secrets.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}}
-        ports:
-          - 3000:3000
-          
-
-      services:
-        db:
-          image: postgres
-          options: >-
-            --health-cmd pg_isready
-            --health-interval 10s
-            --health-timeout 5s
-            --health-retries 5
-          env:
-            POSTGRES_USER: ${{secrets.POSTGRES_USER}}
-            POSTGRES_PASSWORD: ${{secrets.POSTGRES_PASSWORD}}
-            POSTGRES_DB: ${{secrets.DB_NAME_TEST}}
-          ports:
-            - 5432:5432
-
-        backend:
-          image: pedrohsalmeida/nimbus-backend:latest
-          options: >-
-            --entrypoint /bin/sh
-            --health-cmd backend_pronto
-            --health-interval 10s
-            --health-timeout 5s
-            --health-retries 5
-          env:
-            PORT: ${{secrets.PORT}}
-            JWT_SECRET: ${{secrets.JWT_SECRET}}
-            DB_URL_MONGO_BACK: ${{secrets.DB_URL_MONGO_BACK}}
-            DB_NAME: ${{secrets.DB_NAME}}
-            DB_HOST: db
-            DB_USER: ${{secrets.DB_USER}}
-            DB_PORT: ${{secrets.DB_PORT}}
-            DB_PASSWORD: ${{secrets.DB_PASSWORD}}
-            DB_NAME_TEST: ${{secrets.DB_NAME_TEST}}
-          ports:
-            - 8000:8000
 
       steps:
 
+        - name: Checkout code
+          uses: actions/checkout@v3
+
+        - name: Build backend container image
+          run: docker build -t backend/testeIntegracao .
+
+        - name: Run PostgreSQL
+          run: |
+            docker pull postgres
+            docker run --name db \
+              -e POSTGRES_USER=${{ secrets.POSTGRES_USER }} \
+              -e POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} \
+              -e POSTGRES_DB=${{ secrets.DB_NAME_TEST }} \
+              -d postgres
+
+        - name: Rodar back
+          run: |
+              docker run --name backend \
+              -e PORT=${{ secrets.PORT }} \
+              -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
+              -e DB_URL_MONGO_BACK=${{ secrets.DB_URL_MONGO_BACK }} \
+              -e DB_NAME=${{ secrets.DB_NAME }} \
+              -e DB_HOST=db \
+              -e DB_USER=${{ secrets.DB_USER }} \
+              -e DB_PORT=${{ secrets.DB_PORT }} \
+              -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+              -e DB_NAME_TEST=${{ secrets.DB_NAME_TEST }} \
+              -d backend/testeIntegracao \
+              sh -c "npm run test:cypress"
+                      
+
+
         - name: Rodar frontend
           run: |
-            npm install
-            npx next build
-            npx next start
+            docker pull pedrohsalmeida/nimbus-frontend:Dev-latest
+            docker run --name frontend -d pedrohsalmeida/nimbus-frontend:Dev-latest
 
 
         - name: Rodar os testes do frontend
           run: |
-            npm run cypress:run
+            docker exec frontend npm run test:cypress
     
     AceitaRecusaPR:
       runs-on: ubuntu-latest
@@ -106,51 +86,51 @@ jobs:
       steps:
         - name: Checkout code
           uses: actions/checkout@v3
-          
+
         - name: Aprovando pull_request se os testes passarem
           uses: juliangruber/approve-pull-request-action@v2 
           with:
               github-token: ${{ secrets.ADM_TOKEN }}
               number: ${{ github.event.pull_request.number }}
-    
+
         - name: Merge Pull Request
           uses: juliangruber/merge-pull-request-action@v1
           with:
             github-token: ${{ secrets.ADM_TOKEN }}
             number: ${{ github.event.pull_request.number }}
             method: squash
-    
+
         - run: echo "HEAD:${{github.event.pull_request.head.repo.name}}, BASE:${{github.event.pull_request.base.repo.name}}"
-            
+
     PushDokerHub:
       runs-on: ubuntu-latest
-    
+
       needs: AceitaRecusaPR
-    
+
       steps:
         - name: Checkout code
           uses: actions/checkout@v3
-    
+
         - name: Instalar Docker Compose
           run: sudo apt-get install docker-compose
-    
+
         - name: Construir Imagem Docker
           run: docker-compose build
-    
-    
+
+
         - name: Configurar Docker para autenticação
           uses: docker/login-action@v2
           with:
             username: ${{ secrets.DOCKER_USERNAME }}
             password: ${{ secrets.DOCKER_TOKEN }}
-    
+
         - name: Construir a imagem Docker
           run: |
             # Usando o número do pull request como parte da tag
-            docker build -t pedrohsalmeida/nimbus-backend:Dev-0.${{ github.event.number }}
-            docker tag pedrohsalmeida/nimbus-backend:Dev-0.${{ github.event.number }} pedrohsalmeida/nimbus-backend:Dev-latest
+            docker build -t pedrohsalmeida/nimbus-backend:Rel-0.${{ github.event.number }}
+            docker tag pedrohsalmeida/nimbus-backend:Rel-0.${{ github.event.number }} pedrohsalmeida/nimbus-backend:Rel-latest
     
         - name: Push da imagem para o Docker Hub
           run: |
-            docker push pedrohsalmeida/nimbus-backend:Dev-0.${{ github.event.number }}
-            docker push pedrohsalmeida/nimbus-backend:Dev-latest
+            docker push pedrohsalmeida/nimbus-backend:Rel-0.${{ github.event.number }}
+            docker push pedrohsalmeida/nimbus-backend:Rel-latest
