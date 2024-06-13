@@ -68,7 +68,7 @@ jobs:
         - name: Build and export Docker image
           uses: docker/build-push-action@v5
           with:
-            tags: back:test
+            tags: back/test
 
         - name: List Docker images
           run: | 
@@ -77,7 +77,7 @@ jobs:
 
         - name: Build e run backend container image
           run: |
-            docker run --name backend --link db:db -e PORT=${{ secrets.PORT }} -e JWT_SECRET=dsishnidni -e DB_HOST=db -e DB_USER=${{ secrets.DB_USER }} -e DB_PORT=${{ secrets.DB_PORT }} -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} -e DB_NAME_TEST=${{ secrets.DB_NAME_TEST }} -d back:test sh -c "npm run migration:run && npm run test:cypress"
+            docker run --name backend --link db:db -e PORT=${{ secrets.PORT }} -e JWT_SECRET=dsishnidni -e DB_HOST=db -e DB_USER=${{ secrets.DB_USER }} -e DB_PORT=${{ secrets.DB_PORT }} -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} -e DB_NAME_TEST=${{ secrets.DB_NAME_TEST }} -d back/test sh -c "npm run migration:run && npm run test:cypress"
             docker ds
 
         - uses: cypress-io/github-action@v6
