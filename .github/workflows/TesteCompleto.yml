@@ -57,13 +57,7 @@ jobs:
           ports:
             - 3000:3000
             
-      
-      container:
-        image: cypress/included:8.6.0
-        ports:
-          - 8080:8080
-        env:
-          CYPRESS_baseUrl: http://frontend:3000
+
 
       steps:
 
@@ -81,7 +75,6 @@ jobs:
 
         - name: Build e run backend container image
           run: |
-            docker build -t backend/testeintegracao .
             docker run --name backend --link db:db -e PORT=${{ secrets.PORT }} -e JWT_SECRET=dsishnidni -e DB_HOST=db -e DB_USER=${{ secrets.DB_USER }} -e DB_PORT=${{ secrets.DB_PORT }} -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} -e DB_NAME_TEST=${{ secrets.DB_NAME_TEST }} -d back:test sh -c "npm run migration:run && npm run test:cypress"
             docker ds
 
