@@ -33,8 +33,6 @@ jobs:
           id: test
           run: npm run test:unit
         
-        - name: Build imagem backend teste
-          run: |
 
 
 
