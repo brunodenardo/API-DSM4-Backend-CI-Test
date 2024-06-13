@@ -42,13 +42,18 @@ jobs:
 
         - name: Checkout code
           uses: actions/checkout@v3
-
+          with:
+            path: back
+          
         - name: Set up Docker Buildx
           uses: docker/setup-buildx-action@v3
 
         - name: Build backend container image
           run: |
+            ls -la
+            cd back
             docker build -t backend/testeintegracao .
+            cd ..
 
         - name: Run PostgreSQL
           run: |
@@ -63,18 +68,29 @@ jobs:
 
           # -e JWT_SECRET=${{ secrets.JWT_SECRET }} -e DB_NAME=${{ secrets.DB_NAME }} -e DB_HOST=db -e DB_USER=${{ secrets.DB_USER }} -e DB_PORT=${{ secrets.DB_PORT }} -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} -e DB_NAME_TEST=${{ secrets.DB_NAME_TEST }}
 
+        - name: Criar e navegar para a pasta
+          run: |
+            mkdir front
+            cd front
+
+        - name: checkout front
+          uses: actions/checkout@v3
+          with:
+            repo: brunodenardo/API-DSM4-Frontend-CI 
+            path: develop
+
+
         - name: Rodar frontend
           run: |
             docker pull pedrohsalmeida/nimbus-frontend:Dev-latest
             docker run --name frontend -d pedrohsalmeida/nimbus-frontend:Dev-latest sh -c "npm build && npm start"
-            docker exec frontend apk add --no-cache libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libnss3 libxss1 libasound2 libxtst6 xauth xvfb
 
-        - name: Rodar os testes do frontend
+        - name: Rodar os testes E2E
           run: |
             docker ps
-            docker exec frontend apk add --no-cache libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libnss3 libxss1 libasound2 libxtst6 xauth xvfb
-            docker exec frontend ls -la
-            docker exec frontend npx cypress run
+            apt-get install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libnss3 libxss1 libasound2 libxtst6 xauth xvfb
+            npm i
+            npx cypress run
 
     
     AceitaRecusaPR:
