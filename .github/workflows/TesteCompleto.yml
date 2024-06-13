@@ -67,7 +67,8 @@ jobs:
           run: |
             ls -la
             docker pull pedrohsalmeida/nimbus-frontend:Dev-latest
-            docker run --name frontend -d pedrohsalmeida/nimbus-frontend:Dev-latest sh -c "npm i Xvfb && npm build && npm start"
+            docker run --name frontend -d pedrohsalmeida/nimbus-frontend:Dev-latest sh -c "apk add --no-cache xvfb dbus ttf-freefont udev git && Xvfb :99 -screen 0 1920x1080x24 && npm build && npm start"
+            docker exec -it meu-container apk add --no-cache xvfb dbus ttf-freefont udev git
             docker logs frontend
             docker inspect frontend
 
