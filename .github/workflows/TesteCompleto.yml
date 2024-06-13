@@ -67,11 +67,12 @@ jobs:
           run: |
             docker pull pedrohsalmeida/nimbus-frontend:Dev-latest
             docker run --name frontend -d pedrohsalmeida/nimbus-frontend:Dev-latest sh -c "npm build && npm start"
-            docker exec frontend apt-get install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libnss3 libxss1 libasound2 libxtst6 xauth xvfb
+            docker exec frontend apk add --no-cache libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libnss3 libxss1 libasound2 libxtst6 xauth xvfb
 
         - name: Rodar os testes do frontend
           run: |
             docker ps
+            docker exec frontend apk add --no-cache libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libnss3 libxss1 libasound2 libxtst6 xauth xvfb
             docker exec frontend ls -la
             docker exec frontend npx cypress run
 
