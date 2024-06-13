@@ -26,7 +26,17 @@ jobs:
           uses: actions/checkout@v3
 
 
-
+        - name: Debug Environment Variables
+          run: |
+            echo "PORT: ${{ secrets.PORT }}"
+            echo "JWT_SECRET: ${{ secrets.JWT_SECRET }}"
+            echo "DB_URL_MONGO_BACK: ${{ secrets.DB_URL_MONGO_BACK }}"
+            echo "DB_NAME: ${{ secrets.DB_NAME }}"
+            echo "DB_HOST: ${{ secrets.DB_HOST }}"
+            echo "DB_USER: ${{ secrets.DB_USER }}"
+            echo "DB_PORT: ${{ secrets.DB_PORT }}"
+            echo "DB_PASSWORD: ${{ secrets.DB_PASSWORD }}"
+            echo "DB_NAME_TEST: ${{ secrets.DB_NAME_TEST }}"
 
 
 
