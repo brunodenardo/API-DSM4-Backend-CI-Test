@@ -70,6 +70,8 @@ jobs:
           with:
             tags: back:test
 
+        - name: List Docker images
+          run: docker image ls -a
 
         - name: Build e run backend container image
           run: |
