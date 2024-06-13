@@ -68,11 +68,12 @@ jobs:
             ls -la
             docker pull pedrohsalmeida/nimbus-frontend:Dev-latest
             docker run --name frontend -d pedrohsalmeida/nimbus-frontend:Dev-latest sh -c "npm i Xvfb && npm build && npm start"
-
+            docker logs frontend
+            docker inspect frontend
 
         - name: Rodar os testes do frontend
           run: |
-            
+            docker exec frontend npm i Xvfb
             docker exec frontend npx cypress run
 
     
