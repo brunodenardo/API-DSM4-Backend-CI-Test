@@ -62,7 +62,16 @@ jobs:
           uses: docker/setup-buildx-action@v3
 
         - name: Build backend container image
-          run: docker build -t backend/testeintegracao .
+          run: |
+            docker build -t backend/testeintegracao . \
+               --build-arg PORT=${{ secrets.PORT }} \
+               --build-arg JWT_SECRET=${{ secrets.JWT_SECRET }} \
+               --build-arg DB_NAME=${{ secrets.DB_NAME }} \
+               --build-arg DB_HOST=db \
+               --build-arg DB_USER=${{ secrets.DB_USER }} \
+               --build-arg DB_PORT=${{ secrets.DB_PORT }} \
+               --build-arg DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+               --build-arg DB_NAME_TEST=${{ secrets.DB_NAME_TEST }}
 
         - name: Run PostgreSQL
           run: |
