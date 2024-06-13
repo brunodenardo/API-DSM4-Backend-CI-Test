@@ -25,21 +25,6 @@ jobs:
         - name: Checkout code
           uses: actions/checkout@v3
 
-
-        - name: Debug Environment Variables
-          run: |
-            echo "PORT: ${{ secrets.PORT }}"
-            echo "JWT_SECRET: ${{ secrets.JWT_SECRET }}"
-            echo "DB_URL_MONGO_BACK: ${{ secrets.DB_URL_MONGO_BACK }}"
-            echo "DB_NAME: ${{ secrets.DB_NAME }}"
-            echo "DB_HOST: ${{ secrets.DB_HOST }}"
-            echo "DB_USER: ${{ secrets.DB_USER }}"
-            echo "DB_PORT: ${{ secrets.DB_PORT }}"
-            echo "DB_PASSWORD: ${{ secrets.DB_PASSWORD }}"
-            echo "DB_NAME_TEST: ${{ secrets.DB_NAME_TEST }}"
-
-
-
         - name: Instalando dempendencias
           run: npm install
 
@@ -74,6 +59,7 @@ jobs:
           run: |
             docker run --name backend \
              -e PORT=${{ secrets.PORT }} \
+             -e DB_NAME=${{ secrets.DB_NAME }} \
              -d backend/testeintegracao \
              sh -c "npm run migration:run && npm run test:cypress"
 
@@ -84,15 +70,12 @@ jobs:
             ls -la
             docker pull pedrohsalmeida/nimbus-frontend:Dev-latest
             docker run --name frontend -d pedrohsalmeida/nimbus-frontend:Dev-latest
-            ls -la
-            docker pull pedrohsalmeida/nimbus-frontend:Dev-latest
-            docker run --name frontend -d pedrohsalmeida/nimbus-frontend:Dev-latest
 
 
         - name: Rodar os testes do frontend
           run: |
             docker exec frontend npx cypress run
-            docker exec frontend npx cypress run
+
     
     AceitaRecusaPR:
       runs-on: ubuntu-latest
