@@ -52,7 +52,7 @@ jobs:
           uses: docker/setup-buildx-action@v3
 
         - name: Build backend container image
-          run: docker build -t backend/testeintegracao . --build-args PORT=${{ secrets.PORT }} JWT_SECRET=${{ secrets.JWT_SECRET }} DB_NAME=${{ secrets.DB_NAME }} DB_HOST=db DB_USER=${{ secrets.DB_USER }} DB_PORT=${{ secrets.DB_PORT }} DB_PASSWORD=${{ secrets.DB_PASSWORD }} DB_NAME_TEST=${{ secrets.DB_NAME_TEST }}
+          run: docker build -t backend/testeintegracao .
 
         - name: Run PostgreSQL
           run: |
@@ -60,8 +60,19 @@ jobs:
             docker run --name db -e POSTGRES_USER=${{ secrets.POSTGRES_USER }} -e POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} -e POSTGRES_DB=${{ secrets.DB_NAME_TEST }} -d postgres
 
         - name: Rodar back
-          run: docker run --name backend -e PORT=${{ secrets.PORT }} -e JWT_SECRET=${{ secrets.JWT_SECRET }} -e DB_URL_MONGO_BACK=${{ secrets.DB_URL_MONGO_BACK }} -e DB_NAME=${{ secrets.DB_NAME }} -e DB_HOST=${{ secrets.DB_HOST }} -e DB_USER=${{ secrets.DB_USER }} -e DB_PORT=${{ secrets.DB_PORT }} -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} -e DB_NAME_TEST=${{ secrets.DB_NAME_TEST }} -d backend/testeintegracao sh -c "npm run migration:run && npm run test:cypress"
-
+          run: |
+            docker run --name backend \
+             -e PORT=${{ secrets.PORT }} \
+             -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
+             -e DB_URL_MONGO_BACK=${{ secrets.DB_URL_MONGO_BACK }} \
+             -e DB_NAME=${{ secrets.DB_NAME }} \
+             -e DB_HOST=${{ secrets.DB_HOST }} \
+             -e DB_USER=${{ secrets.DB_USER }} \
+             -e DB_PORT=${{ secrets.DB_PORT }} \
+             -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+             -e DB_NAME_TEST=${{ secrets.DB_NAME_TEST }} \
+             -d backend/testeintegracao \
+             sh -c "npm run migration:run && npm run test:cypress"
 
           # -e JWT_SECRET=${{ secrets.JWT_SECRET }} -e DB_NAME=${{ secrets.DB_NAME }} -e DB_HOST=db -e DB_USER=${{ secrets.DB_USER }} -e DB_PORT=${{ secrets.DB_PORT }} -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} -e DB_NAME_TEST=${{ secrets.DB_NAME_TEST }}
 
