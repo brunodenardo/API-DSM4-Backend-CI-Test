@@ -80,7 +80,6 @@ jobs:
         backend:
           image: pedrohsalmeida/nimbus-backend:integracao
           env:
-            NODE_ENV: test
             PORT: ${{secrets.PORT}}
             JWT_SECRET: ${{secrets.JWT_SECRET}}
             DB_URL_MONGO_BACK: ${{secrets.DB_URL_MONGO_BACK}}
