@@ -49,13 +49,13 @@ jobs:
             POSTGRES_DB: ${{ secrets.DB_NAME_TEST }}
           ports:
             - 5432:5432
-
+          options: --network github_network
 
         frontend:
           image: pedrohsalmeida/nimbus-frontend:Dev-latest
           ports:
             - 3000:3000
-
+          options: --network github_network
 
       steps:
 
@@ -70,9 +70,6 @@ jobs:
           with:
             tags: back/test
             outputs: type=docker
-
-        - name: Create a custom Docker network
-          run: docker network create rede_container
 
         - name: List Docker images
           run: | 
