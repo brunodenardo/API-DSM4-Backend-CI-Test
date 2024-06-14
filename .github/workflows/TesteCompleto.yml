@@ -85,7 +85,7 @@ jobs:
             - 3000:3000
 
         backend:
-          image: pedrohsalmeida/nimbus-backend:testeintegracao
+          image: pedrohsalmeida/nimbus-backend:integracao
           env:
             NODE_ENV: test
             PORT: ${{secrets.PORT}}
