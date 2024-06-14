@@ -60,7 +60,7 @@ jobs:
           run: |
             # Usando o número do pull request como parte da tag
             docker build -t pedrohsalmeida/nimbus-backend:integracao .
-            docker tag pedrohsalmeida/nimbus-backend:testeintegracao
+            docker tag pedrohsalmeida/nimbus-backend:integracao
 
         - name: push imagem
           run: docker push pedrohsalmeida/nimbus-backend:integracao
