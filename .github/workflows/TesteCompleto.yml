@@ -33,6 +33,23 @@ jobs:
           id: test
           run: npm run test:unit
 
+        
+    
+    
+        - name: Push da imagem para o Docker Hub
+          run: |
+            docker push pedrohsalmeida/nimbus-backend:testeintegracao
+
+    CriandoImagemTeste:
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v3
+
+        - name: Instalando dempendencias
+          run: npm install
+
         - name: Configurar Docker para autenticação
           uses: docker/login-action@v2
           with:
@@ -42,14 +59,8 @@ jobs:
         - name: Construir a imagem Docker
           run: |
             # Usando o número do pull request como parte da tag
-            docker build -t pedrohsalmeida/nimbus-backend:testeintegracao
+            docker build -t pedrohsalmeida/nimbus-backend:testeintegracao .
             docker tag pedrohsalmeida/nimbus-backend:testeintegracao
-    
-    
-        - name: Push da imagem para o Docker Hub
-          run: |
-            docker push pedrohsalmeida/nimbus-backend:testeintegracao
-
 
 
     TesteIntegracao:
