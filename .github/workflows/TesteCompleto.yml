@@ -75,7 +75,7 @@ jobs:
         - name: Get network ID
           id: get_network_id
           run: |
-            NETWORK_ID=$(docker network ls --filter "label=github_action" --format "{{.ID}}")
+            NETWORK_ID=$(docker network ls --filter "label=github_network" --format "{{.ID}}")
             echo "NETWORK_ID=${NETWORK_ID}"
             echo "##[set-output name=network_id;]${NETWORK_ID}"
 
