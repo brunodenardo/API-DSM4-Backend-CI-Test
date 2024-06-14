@@ -94,14 +94,15 @@ jobs:
         - name: Checkout code
           uses: actions/checkout@v3
           with:
-            sparse-checkout: |
-              cypress
-              cypress.config.ts
-            sparse-checkout-cone-mode: false
             repository: brunodenardo/API-DSM4-Frontend-CI
             ref: develop
+            path: front
 
-        - run: ls -la
+        - name: passando para diretorio front
+          run: |
+            ls -la
+            cd front
+            ls -la
 
         
         - uses: cypress-io/github-action@v6
