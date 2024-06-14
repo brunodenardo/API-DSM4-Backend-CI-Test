@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     
     container:
-      image: pedrohsalmeida/nimbus-backend:latest
+      image: pedrohsalmeida/nimbus-backend:Dev-latest
       options: --entrypoint /bin/sh
       env:
         PORT: ${{ secrets.PORT }}
@@ -78,11 +78,11 @@ jobs:
         run: |
           # Usando o número do pull request como parte da tag
           docker build -t pedrohsalmeida/nimbus-backend:Dev-0.${{ github.event.number }} .
-          docker tag pedrohsalmeida/nimbus-backend:Dev-0.${{ github.event.number }} pedrohsalmeida/nimbus-backend:latest
+          docker tag pedrohsalmeida/nimbus-backend:Dev-0.${{ github.event.number }} pedrohsalmeida/nimbus-backend:Dev-latest
 
       - name: Push da imagem para o Docker Hub
         run: |
           docker push pedrohsalmeida/nimbus-backend:Dev-0.${{ github.event.number }}
-          docker push pedrohsalmeida/nimbus-backend:latest
+          docker push pedrohsalmeida/nimbus-backend:Dev-latest
 
 
