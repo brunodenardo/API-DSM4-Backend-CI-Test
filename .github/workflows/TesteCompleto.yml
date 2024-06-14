@@ -20,15 +20,13 @@ jobs:
             DB_URL_MONGO_BACK: ${{ secrets.DB_URL_MONGO_BACK }}
 
 
-
         steps:
         - name: Checkout code
           uses: actions/checkout@v3
 
         - name: Instalando dempendencias
           run: npm install
-
-
+          
         - name: rodando testes
           id: test
           run: npm run test:unit
@@ -134,7 +132,6 @@ jobs:
               github-token: ${{ secrets.ADM_TOKEN }}
               number: ${{ github.event.pull_request.number }}
 
-
         - name: Merge Pull Request
           uses: juliangruber/merge-pull-request-action@v1
           with:
@@ -152,10 +149,10 @@ jobs:
 
       needs: AceitaRecusaPR
 
-
       steps:
         - name: Checkout code
           uses: actions/checkout@v3
+
 
 
         - name: Instalar Docker Compose
@@ -183,3 +180,4 @@ jobs:
           run: |
             docker push pedrohsalmeida/nimbus-backend:Rel-0.${{ github.event.number }}
             docker push pedrohsalmeida/nimbus-backend:Rel-latest
+
