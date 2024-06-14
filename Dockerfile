@@ -16,4 +16,4 @@ COPY . .
 EXPOSE 8000
 
 # Comando para rodar a aplicação
-CMD ["sh", "-c", "npm run migration:run && npm run start"]
+CMD ["sh", "-c", "npm run migration:run", "if [ \"$NODE_ENV\" = \"test\" ]; npm run test:cypress; else npm run start; fi"]
