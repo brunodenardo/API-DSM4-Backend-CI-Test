@@ -35,7 +35,7 @@ jobs:
 
     CriandoImagemTeste:
       runs-on: ubuntu-latest
-
+      needs: TesteUnitario
       steps:
         - name: Checkout code
           uses: actions/checkout@v3
@@ -52,7 +52,7 @@ jobs:
         - name: Construir a imagem Docker
           run: |
             # Usando o número do pull request como parte da tag
-            docker build -t pedrohsalmeida/nimbus-backend:testeintegracao .
+            docker build -t pedrohsalmeida/nimbus-backend:testeintegracao
             docker tag pedrohsalmeida/nimbus-backend:testeintegracao
 
 
@@ -95,40 +95,13 @@ jobs:
 
         - name: Checkout code
           uses: actions/checkout@v3
-
-        - name: Set up Docker Buildx
-          uses: docker/setup-buildx-action@v3
         
-        - name: Build and export Docker image
-          uses: docker/build-push-action@v5
-          with:
-            tags: back/test
-            outputs: type=docker
 
         - name: List Docker images
           run: | 
             docker image ls -a
             docker ps
-        
-        - name: Inspect frontend container
-          id: inspect_frontend
-          run: |
-            network_name=$(docker inspect -f '{{ range .NetworkSettings.Networks }}{{ .NetworkID }} {{ end }}' ${{job.services.frontend.id}})
-            echo "::set-output name=network_name::$network_name"
     
-        - name: Use network name in a subsequent step
-          run: |
-            echo "Network name: ${{ steps.inspect_frontend.outputs.network_name }}"
-    
-
-        - name: Build e run backend container image
-          run: |
-            docker run --name backend   -d back/test:latest sh -c "npm run migration:run && npm run test:cypress"
-            docker logs backend
-            npm i cypress
-            docker ps
-
-        #--network ${{ steps.inspect_frontend.outputs.network_name }}  -e PORT=${{ secrets.PORT }} -e JWT_SECRET=dsishnidni -e DB_HOST=db -e DB_USER=${{ secrets.DB_USER }} -e DB_PORT=${{ secrets.DB_PORT }} -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} -e DB_NAME_TEST=${{ secrets.DB_NAME_TEST }}
 
         - name: Checkout code
           uses: actions/checkout@v3
@@ -142,7 +115,6 @@ jobs:
             ls -la
             cd front
             ls -la
-
         
         - uses: cypress-io/github-action@v6
           with:
