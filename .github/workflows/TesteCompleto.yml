@@ -113,12 +113,10 @@ jobs:
           run: | 
             docker image ls -a
             docker ps
-            npm i
         
         - uses: cypress-io/github-action@v6
           with:
             browser: chrome
-            project: ./front
           env:
             CYPRESS_host: http://localhost:3000
 
