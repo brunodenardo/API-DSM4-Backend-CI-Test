@@ -86,7 +86,7 @@ jobs:
             PORT: ${{secrets.PORT}}
             JWT_SECRET: ${{secrets.JWT_SECRET}}
             DB_URL_MONGO_BACK: ${{secrets.DB_URL_MONGO_BACK}}
-            DB_NAME: ${{secrets.DB_NAME}}
+            DB_NAME: ${{secrets.DB_NAME_TEST}}
             DB_HOST: db
             DB_USER: ${{secrets.DB_USER}}
             DB_PORT: ${{secrets.DB_PORT}}
@@ -99,8 +99,6 @@ jobs:
           image: pedrohsalmeida/nimbus-frontend:Dev-latest
           ports:
             - 3000:3000
-          env:
-            BACK_HOST: backend
           
       steps:
 
