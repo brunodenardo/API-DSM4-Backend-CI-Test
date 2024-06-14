@@ -43,6 +43,13 @@ jobs:
         - name: Instalando dempendencias
           run: npm install
 
+        - name: Instalar Docker Compose
+          run: sudo apt-get install docker-compose
+
+
+        - name: Construir Imagem Docker
+          run: docker-compose build
+
         - name: Configurar Docker para autenticação
           uses: docker/login-action@v2
           with:
@@ -57,7 +64,7 @@ jobs:
 
 
     TesteIntegracao:
-      needs: TesteUnitario
+      needs: CriandoImagemTeste
       runs-on: ubuntu-latest
 
       services:
