@@ -68,7 +68,8 @@ jobs:
         - name: Build and export Docker image
           uses: docker/build-push-action@v5
           with:
-            tags: back:test
+            tags: back/test
+            outputs: type=docker
 
         - name: List Docker images
           run: docker image ls -a
