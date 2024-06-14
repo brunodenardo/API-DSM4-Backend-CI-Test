@@ -77,7 +77,7 @@ jobs:
         - name: List Docker networks
           run: |
             docker network ls
-            echo "${{job.services}}"
+            echo "${{ toJSON(job.services) }}"
     
 
         - name: Build e run backend container image
