@@ -99,7 +99,7 @@ jobs:
               cypress.config.ts
             sparse-checkout-cone-mode: false
             repository: brunodenardo/API-DSM4-Frontend-CI
-            path: develop
+            ref: develop
 
         - run: ls -la
 
