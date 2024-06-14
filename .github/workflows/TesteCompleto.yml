@@ -49,11 +49,13 @@ jobs:
             POSTGRES_DB: ${{ secrets.DB_NAME_TEST }}
           ports:
             - 5432:5432
+          options: --network bridge
 
         frontend:
           image: pedrohsalmeida/nimbus-frontend:Dev-latest
           ports:
             - 3000:3000
+          options: --network bridge
 
       steps:
 
@@ -69,16 +71,6 @@ jobs:
             tags: back/test
             outputs: type=docker
 
-        - name: List Docker networks
-          run: docker network ls
-    
-        - name: Get network ID
-          id: get_network_id
-          run: |
-            NETWORK_ID=$(docker network ls --filter "label=github_network" --format "{{.ID}}")
-            echo "NETWORK_ID=${NETWORK_ID}"
-            echo "##[set-output name=network_id;]${NETWORK_ID}"
-
         - name: List Docker images
           run: | 
             docker image ls -a
@@ -86,7 +78,7 @@ jobs:
 
         - name: Build e run backend container image
           run: |
-            docker run --name backend --network ${{ steps.get_network_id.outputs.network_id }} -e PORT=${{ secrets.PORT }} -e JWT_SECRET=dsishnidni -e DB_HOST=db -e DB_USER=${{ secrets.DB_USER }} -e DB_PORT=${{ secrets.DB_PORT }} -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} -e DB_NAME_TEST=${{ secrets.DB_NAME_TEST }} -d back/test sh -c "npm run migration:run && npm run test:cypress"
+            docker run --name backend --network bridge -e PORT=${{ secrets.PORT }} -e JWT_SECRET=dsishnidni -e DB_HOST=db -e DB_USER=${{ secrets.DB_USER }} -e DB_PORT=${{ secrets.DB_PORT }} -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} -e DB_NAME_TEST=${{ secrets.DB_NAME_TEST }} -d back/test sh -c "npm run migration:run && npm run test:cypress"
             docker ds
 
         - uses: cypress-io/github-action@v6
