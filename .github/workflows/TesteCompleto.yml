@@ -71,6 +71,9 @@ jobs:
             tags: back/test
             outputs: type=docker
 
+        - name: Create a custom Docker network
+          run: docker network create rede_container
+
         - name: List Docker images
           run: | 
             docker image ls -a
