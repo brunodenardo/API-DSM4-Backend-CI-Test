@@ -74,19 +74,15 @@ jobs:
             docker image ls -a
             docker ps
         
-            - name: List Docker networks
-            run: docker network ls
-    
-        - name: Get network ID
-          id: get_network_id
+        - name: List Docker networks
           run: |
-            NETWORK_NAME=$(docker network ls --format "{{.Name}}" | grep '^github_network_' | head -n 1)
-            echo "NETWORK_NAME=${NETWORK_NAME}"
-            echo "::set-output name=network_name::${NETWORK_NAME}"
+            docker network ls
+            echo ${{job.services.docker.network_name}}
+    
 
         - name: Build e run backend container image
           run: |
-            docker run --name backend --network ${{steps.get_network_id.outputs.network_name}} -e PORT=${{ secrets.PORT }} -e JWT_SECRET=dsishnidni -e DB_HOST=db -e DB_USER=${{ secrets.DB_USER }} -e DB_PORT=${{ secrets.DB_PORT }} -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} -e DB_NAME_TEST=${{ secrets.DB_NAME_TEST }} -d back/test sh -c "npm run migration:run && npm run test:cypress"
+            docker run --name backend --network ${{job.services.docker.network_name}} -e PORT=${{ secrets.PORT }} -e JWT_SECRET=dsishnidni -e DB_HOST=db -e DB_USER=${{ secrets.DB_USER }} -e DB_PORT=${{ secrets.DB_PORT }} -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} -e DB_NAME_TEST=${{ secrets.DB_NAME_TEST }} -d back/test sh -c "npm run migration:run && npm run test:cypress"
             docker ds
 
         - uses: cypress-io/github-action@v6
