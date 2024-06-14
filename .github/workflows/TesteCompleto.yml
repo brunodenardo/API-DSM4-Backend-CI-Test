@@ -33,13 +33,6 @@ jobs:
           id: test
           run: npm run test:unit
 
-        
-    
-    
-        - name: Push da imagem para o Docker Hub
-          run: |
-            docker push pedrohsalmeida/nimbus-backend:testeintegracao
-
     CriandoImagemTeste:
       runs-on: ubuntu-latest
 
