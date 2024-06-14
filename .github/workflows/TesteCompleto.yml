@@ -59,8 +59,11 @@ jobs:
         - name: Construir a imagem Docker
           run: |
             # Usando o número do pull request como parte da tag
-            docker build -t pedrohsalmeida/nimbus-backend:testeintegracao
+            docker build -t pedrohsalmeida/nimbus-backend:integracao .
             docker tag pedrohsalmeida/nimbus-backend:testeintegracao
+
+        - name: push imagem
+          run: docker push pedrohsalmeida/nimbus-backend:integracao
 
 
     TesteIntegracao:
@@ -138,10 +141,6 @@ jobs:
         - name: Checkout code
           uses: actions/checkout@v3
 
-        
-
-        
-
         - name: Aprovando pull_request se os testes passarem
           uses: juliangruber/approve-pull-request-action@v2 
           with:
@@ -179,9 +178,6 @@ jobs:
         - name: Construir Imagem Docker
           run: docker-compose build
 
-
-
-
         - name: Configurar Docker para autenticação
           uses: docker/login-action@v2
           with:
@@ -192,7 +188,7 @@ jobs:
         - name: Construir a imagem Docker
           run: |
             # Usando o número do pull request como parte da tag
-            docker build -t pedrohsalmeida/nimbus-backend:Rel-0.${{ github.event.number }}
+            docker build -t pedrohsalmeida/nimbus-backend:Rel-0.${{ github.event.number }} .
             docker tag pedrohsalmeida/nimbus-backend:Rel-0.${{ github.event.number }} pedrohsalmeida/nimbus-backend:Rel-latest
     
     
