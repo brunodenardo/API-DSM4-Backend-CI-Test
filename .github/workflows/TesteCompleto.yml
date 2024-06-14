@@ -74,10 +74,15 @@ jobs:
             docker image ls -a
             docker ps
         
-        - name: List Docker networks
+        - name: Inspect frontend container
+          id: inspect_frontend
           run: |
-            docker network ls
-            echo "${{ toJSON(job.services) }}"
+            network_name=$(docker inspect -f '{{ range .NetworkSettings.Networks }}{{ .NetworkID }} {{ end }}' frontend)
+            echo "::set-output name=network_name::$network_name"
+    
+        - name: Use network name in a subsequent step
+          run: |
+            echo "Network name: ${{ steps.inspect_frontend.outputs.network_name }}"
     
 
         - name: Build e run backend container image
