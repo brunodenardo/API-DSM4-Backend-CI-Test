@@ -96,7 +96,7 @@ jobs:
         frontend:
           image: pedrohsalmeida/nimbus-frontend:Dev-latest
           env:
-            BACK_HOST: backend
+            NEXT_PUBLIC_BACK_HOST: backend
           ports:
             - 3000:3000
           
@@ -108,8 +108,6 @@ jobs:
             repository: brunodenardo/API-DSM4-Frontend-CI
             ref: develop
       
-        - name: Print BACK_HOST
-          run: echo "BACK_HOST is set to ${{ job.services.frontend.network }}"
 
         - name: List Docker images
           run: | 
