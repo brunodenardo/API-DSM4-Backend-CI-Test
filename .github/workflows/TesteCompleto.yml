@@ -79,11 +79,6 @@ jobs:
           ports:
             - 5432:5432
 
-        frontend:
-          image: pedrohsalmeida/nimbus-frontend:Dev-latest
-          ports:
-            - 3000:3000
-
         backend:
           image: pedrohsalmeida/nimbus-backend:integracao
           env:
@@ -100,6 +95,13 @@ jobs:
           ports:
             - 8000:8000
 
+        frontend:
+          image: pedrohsalmeida/nimbus-frontend:Dev-latest
+          ports:
+            - 3000:3000
+          env:
+            BACK_HOST: backend
+          
       steps:
 
         - name: Checkout code
