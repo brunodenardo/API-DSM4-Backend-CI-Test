@@ -32,7 +32,23 @@ jobs:
         - name: rodando testes
           id: test
           run: npm run test:unit
+
+        - name: Configurar Docker para autenticação
+          uses: docker/login-action@v2
+          with:
+            username: ${{ secrets.DOCKER_USERNAME }}
+            password: ${{ secrets.DOCKER_TOKEN }}
         
+        - name: Construir a imagem Docker
+          run: |
+            # Usando o número do pull request como parte da tag
+            docker build -t pedrohsalmeida/nimbus-backend:testeintegracao
+            docker tag pedrohsalmeida/nimbus-backend:testeintegracao
+    
+    
+        - name: Push da imagem para o Docker Hub
+          run: |
+            docker push pedrohsalmeida/nimbus-backend:testeintegracao
 
 
 
@@ -55,20 +71,21 @@ jobs:
           ports:
             - 3000:3000
 
-        # backend:
-        #   image: pedrohsalmeida/nimbus-backend:latest
-        #   env:
-        #     PORT: ${{secrets.PORT}}
-        #     JWT_SECRET: ${{secrets.JWT_SECRET}}
-        #     DB_URL_MONGO_BACK: ${{secrets.DB_URL_MONGO_BACK}}
-        #     DB_NAME: ${{secrets.DB_NAME}}
-        #     DB_HOST: db
-        #     DB_USER: ${{secrets.DB_USER}}
-        #     DB_PORT: ${{secrets.DB_PORT}}
-        #     DB_PASSWORD: ${{secrets.DB_PASSWORD}}
-        #     DB_NAME_TEST: ${{secrets.DB_NAME_TEST}}
-        #   ports:
-        #     - 8000:8000
+        backend:
+          image: pedrohsalmeida/nimbus-backend:testeintegracao
+          env:
+            NODE_ENV: test
+            PORT: ${{secrets.PORT}}
+            JWT_SECRET: ${{secrets.JWT_SECRET}}
+            DB_URL_MONGO_BACK: ${{secrets.DB_URL_MONGO_BACK}}
+            DB_NAME: ${{secrets.DB_NAME}}
+            DB_HOST: db
+            DB_USER: ${{secrets.DB_USER}}
+            DB_PORT: ${{secrets.DB_PORT}}
+            DB_PASSWORD: ${{secrets.DB_PASSWORD}}
+            DB_NAME_TEST: ${{secrets.DB_NAME_TEST}}
+          ports:
+            - 8000:8000
 
       steps:
 
@@ -102,7 +119,6 @@ jobs:
 
         - name: Build e run backend container image
           run: |
-            docker build -t back/test:latest .
             docker run --name backend   -d back/test:latest sh -c "npm run migration:run && npm run test:cypress"
             docker logs backend
             npm i cypress
@@ -195,13 +211,9 @@ jobs:
             # Usando o número do pull request como parte da tag
             docker build -t pedrohsalmeida/nimbus-backend:Rel-0.${{ github.event.number }}
             docker tag pedrohsalmeida/nimbus-backend:Rel-0.${{ github.event.number }} pedrohsalmeida/nimbus-backend:Rel-latest
-            docker build -t pedrohsalmeida/nimbus-backend:Rel-0.${{ github.event.number }}
-            docker tag pedrohsalmeida/nimbus-backend:Rel-0.${{ github.event.number }} pedrohsalmeida/nimbus-backend:Rel-latest
+    
     
         - name: Push da imagem para o Docker Hub
           run: |
-            docker push pedrohsalmeida/nimbus-backend:Rel-0.${{ github.event.number }}
-            docker push pedrohsalmeida/nimbus-backend:Rel-latest
-
             docker push pedrohsalmeida/nimbus-backend:Rel-0.${{ github.event.number }}
             docker push pedrohsalmeida/nimbus-backend:Rel-latest
