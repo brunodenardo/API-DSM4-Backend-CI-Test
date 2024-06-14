@@ -109,7 +109,7 @@ jobs:
             ref: develop
       
         - name: Print BACK_HOST
-          run: echo "BACK_HOST is set to ${{ env.BACK_HOST }}"
+          run: echo "BACK_HOST is set to ${{ job.services.frontend.network }}"
 
         - name: List Docker images
           run: | 
